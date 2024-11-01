@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Plus, Pill } from 'lucide-react';
 import ReminderForm from './components/ReminderForm';
 import ReminderList from './components/ReminderList';
@@ -6,6 +6,25 @@ import InfoLinkMenu from './components/InfoLinkMenu';
 import InfoSection from './components/InfoSection';
 import useReminderStore from './store/reminderStore';
 import { InfoSection as InfoSectionType } from './types/info';
+
+import { ToastContainer, toast } from 'react-toastify';
+
+
+import { requestNotificationPermission } from './notify';
+import { showNotification } from './services/notifications';
+
+declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace JSX {
+    interface IntrinsicElements {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      "locator-widget": any;
+    }
+  }
+}
+
 
 const infoSections: InfoSectionType[] = [
   {
@@ -22,18 +41,88 @@ function App() {
   const [selectedSection, setSelectedSection] = useState<InfoSectionType | null>(null);
   const { reminders, addReminder, toggleReminder, updateLastTaken, deleteReminder } = useReminderStore();
 
+  useEffect(() => {
+
+    toast.info('Welcome');
+
+  }, []);
+
+
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  //@ts-ignore
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleSubmit = (data: any) => {
     addReminder(data);
     setShowForm(false);
   };
 
+
+
+
+
+
+  function showNativeNote(event) {
+    console.log(event)
+    showNotification("hey there!", {
+      actions: [
+        {
+          action: 'take',
+          title: 'Take Now',
+        },
+        {
+          action: 'snooze',
+          title: 'Snooze',
+        },
+      ],
+    })
+  }
+
+
+  const MainAppPage: React.FC = () => {
+    const d = `
+    But it doesn’t have to be difficult. Our app is here to keep you on track,
+    day by day, dose by dose. 🕗`;
+    return (
+      <div className="flex flex-col">
+        <header className="flex justify-center items-center py-6">
+          <img src="/image.png" alt="Logo" className="h-96" />
+        </header>
+        <main className="flex flex-grow justify-center items-center">
+          <div className='flex flex-col'>
+            <h1 className="bg-gradient-to-r
+             from-red-500 
+              via-green-500
+              to-indigo-400 
+            
+hover:from-pink-300 hover:via-green-500 hover:to-blue-400
+              inline-block 
+              text-transparent bg-clip-text text-6xl font-bold">
+              Managing your <br></br>HIV medication<br></br> is crucial
+            </h1>
+
+            <p className="text-xl text-wrap md:text-balance text-white mt-2">{d}</p>
+            <br />
+
+
+
+          </div>
+        </main>
+      </div>
+    );
+  };
+
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-#141414" style={{ "backgroundColor": "#141414" }}>
+      <ToastContainer position="bottom-right" autoClose={3000} />
       <div className="max-w-4xl mx-auto p-4">
         <header className="flex items-center justify-between mb-8">
+          <MainAppPage />
           <div className="flex items-center space-x-2">
             <Pill className="w-8 h-8 text-blue-600" />
-            <h1 className="text-2xl font-bold text-gray-900">Med Reminder</h1>
+
+
+
           </div>
           <button
             onClick={() => setShowForm(!showForm)}
@@ -44,6 +133,7 @@ function App() {
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
           <div className="md:col-span-2">
             {showForm ? (
               <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
@@ -82,7 +172,47 @@ function App() {
                 onSectionSelect={setSelectedSection}
               />
             )}
+            <div className="bg-white">
+              <h1>Resources</h1>
+              <locator-widget></locator-widget>
+            </div>
           </div>
+          <div>
+            <article className="text-pretty text-white">
+              <h2 className="font-bold p-2 text-3xl">
+                Because Taking Care of Yourself Shouldn’t Be Harder Than You Think.
+              </h2>
+              <div className="max-w-3xl text-white">
+                <h2 className="text-2xl font-bold mb-4 text-white">Managing your HIV medication is crucial, but it doesn’t have to be difficult.</h2>
+                <p className="text-lg text-white-700 mb-8">Our app is here to keep you on track, day by day, dose by dose.</p>
+
+                <section className="space-y-6">
+
+                  <h3 className="text-xl font-semibold">Reliable Reminders, Right on Time:</h3>
+                  <p className="text-white-600">Never miss a dose. Customize reminders to fit your schedule, so you can focus on living life to the fullest.</p>
+
+                  <h3 className="text-xl font-semibold">Your Health, Your Data:</h3>
+                  <p className="text-white-600">Keep track of your progress, view adherence streaks, and celebrate milestones. All your health data is securely stored and fully private.</p>
+
+                  <h3 className="text-xl font-semibold">Motivational Check-Ins:</h3>
+                  <p className="text-white">We know it’s not always easy. Get encouragement and health tips to help keep you motivated through the journey.</p>
+
+                  <h3 className="text-xl font-semibold">Support in Your Pocket:</h3>
+                  <p className="text-white">Have questions or need assistance? Access trusted HIV resources and support services directly from the app.</p>
+
+                </section>
+              </div>
+
+              <button onClick={requestNotificationPermission}>
+                Enable Notifications
+              </button>
+              <button onClick={showNativeNote}>Native Notifcation</button>
+              <h1 className="text-2xl font-bold text-blue-400">
+                Harder Than You Think
+              </h1>
+            </article>
+          </div>
+
         </div>
       </div>
     </div>

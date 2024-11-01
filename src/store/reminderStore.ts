@@ -71,6 +71,72 @@ const shouldNotifyForReminder = (reminder: Reminder): boolean => {
   }
 };
 
+// const useReminderStore = create<ReminderStore>()(
+//   persist(
+//     (set, get) => ({
+//       reminders: [],
+//       addReminder: (reminder) =>
+//         set((state) => ({
+//           reminders: [...state.reminders, { ...reminder, id: crypto.randomUUID() }],
+//         })),
+//       toggleReminder: (id) =>
+//         set((state) => ({
+//           reminders: state.reminders.map((r) =>
+//             r.id === id ? { ...r, enabled: !r.enabled } : r
+//           ),
+//         })),
+//       updateLastTaken: (id) =>
+//         set((state) => ({
+//           reminders: state.reminders.map((r) =>
+//             r.id === id ? { ...r, lastTaken: new Date().toISOString() } : r
+//           ),
+//         })),
+//       deleteReminder: (id) =>
+//         set((state) => ({
+//           reminders: state.reminders.filter((r) => r.id !== id),
+//         })),
+//       checkReminders: () => {
+//         const { reminders } = get();
+//         reminders.forEach((reminder) => {
+//           if (shouldNotifyForReminder(reminder)) {
+//             showNotification('Medication Reminder', {
+//               body: 'It\'s time to take your medication',
+//               data: { reminderId: reminder.id },
+//               actions: [
+//                 {
+//                   action: 'take',
+//                   title: 'Take Now',
+//                 },
+//                 {
+//                   action: 'snooze',
+//                   title: 'Snooze',
+//                 },
+//               ],
+//             });
+//           }
+//         });
+//       },
+//     }),
+//     {
+//       name: 'hiv-med-reminders',
+//       storage: {
+//         getItem: async (name) => {
+//           const value = await localforage.getItem(name);
+//           return value ?? null;
+//         },
+//         setItem: async (name, value) => {
+//           await localforage.setItem(name, value);
+//         },
+//         removeItem: async (name) => {
+//           await localforage.removeItem(name);
+//         },
+//       },
+//     }
+//   )
+// );
+
+
+
 const useReminderStore = create<ReminderStore>()(
   persist(
     (set, get) => ({
@@ -119,6 +185,7 @@ const useReminderStore = create<ReminderStore>()(
     }),
     {
       name: 'hiv-med-reminders',
+      partialize: (state) => ({ reminders: state.reminders }), // Persist only `reminders`
       storage: {
         getItem: async (name) => {
           const value = await localforage.getItem(name);
